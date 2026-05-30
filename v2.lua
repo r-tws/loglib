@@ -14,11 +14,11 @@ loglib.Colors = {
 	orange = "255, 165, 0",
 	purple = "180, 0, 255",
 }
+
 local function patch()
 	RunService.Heartbeat:Connect(function()
 		local console = CoreGui:FindFirstChild("DevConsoleMaster")
 		if not console then return end
-
 		for _, obj in ipairs(console:GetDescendants()) do
 			if obj:IsA("TextLabel") and not obj.RichText then
 				obj.RichText = true
@@ -26,19 +26,19 @@ local function patch()
 		end
 	end)
 end
+
 local function find_label(needle)
 	local console = CoreGui:FindFirstChild("DevConsoleMaster")
 	if not console then return nil end
-
 	for _, obj in ipairs(console:GetDescendants()) do
 		if obj:IsA("TextLabel") and obj.Text:find(needle, 1, true) then
 			return obj
 		end
 	end
-
 	return nil
 end
-function loglib:print(msg, color)
+
+function loglib:print(msg, color, time)
 	color = color or loglib.Colors.white
 	local tag = tostring(math.random(100000000, 999999999))
 	print(tag)
@@ -47,8 +47,12 @@ function loglib:print(msg, color)
 		task.wait()
 		label = find_label(tag)
 	until label ~= nil
-
-	label.Text = ("<font color='rgb(%s)'>%s</font>"):format(color, msg)
+	if time then
+		label.Text = ("%s -- <font color='rgb(%s)'>%s</font>"):format(os.date("%H:%M:%S"), color, msg)
+	else
+		label.Text = ("<font color='rgb(%s)'>%s</font>"):format(color, msg)
+	end
 end
+
 patch()
 return loglib
